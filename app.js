@@ -3,6 +3,7 @@ const path = require("path");
 const http = require("http");
 const cors = require("cors");
 const fileUpload = require("express-fileupload")
+const {config} = require("./config/secret")
 
 const {routesInit} = require("./routes/config_routes")
 require("./db/mongoconnect");
@@ -21,5 +22,5 @@ routesInit(app);
 
 const server = http.createServer(app);
 
-let port = process.env.PORT || 3003
+let port = process.env.PORT || config.defaultPort
 server.listen(port);
