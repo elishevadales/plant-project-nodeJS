@@ -6,7 +6,8 @@ exports.validUser = (_reqBody) => {
       name:Joi.string().min(2).max(25).required(),
       email:Joi.string().min(2).max(99).email().required(),
       password:Joi.string().min(3).max(99).required(),
-      img_url:Joi.string().min(0).max(1000).allow()
+      img_url:Joi.string().min(0).max(1000).allow(),
+      img_url_preview:Joi.string().min(0).max(1000).allow()
     })
   
     return joiSchema.validate(_reqBody);
@@ -26,7 +27,8 @@ exports.validUser = (_reqBody) => {
   exports.validInfo = (_reqBody) => {
     let joiSchema = Joi.object({
       name:Joi.string().min(2).max(25).allow(),
-      img_url:Joi.string().min(0).max(1000).allow()
+      img_url:Joi.string().min(0).max(1000).allow(),
+      img_url_preview:Joi.string().min(0).max(1000).allow()
     })
     return joiSchema.validate(_reqBody);
   }

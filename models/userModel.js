@@ -8,7 +8,10 @@ let userSchema = new mongoose.Schema({
   email:String,
   password:String,
   img_url:{
-    type:String, default: config.serverAddress + "/images/avatars/defaultAvatar.png"
+    type:String, default: "defaultAvatar.png"
+  },
+  img_url_preview:{
+    type:String, default: "defaultAvatar.png"
   },
   date_created:{
     type:Date , default:Date.now()

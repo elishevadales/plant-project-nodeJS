@@ -42,17 +42,19 @@ router.post("/avatar", auth, async (req, res) => {
 
 
     // update user's img_url in DB
-     let updateData = await UserModel.updateOne({ _id: req.tokenData._id }, { img_url: config.serverAddress + "/images/avatars/" + newName })
-    res.json({ msg: "File uploaded", status: 200 })
+    let updateData = await UserModel.updateOne({ _id: req.tokenData._id }, { img_url: newName })
+    // res.json({ msg: "File uploaded", status: 200 })
   })
 
-  try{
-     sharp(myFile.data)
-  .resize(100)
-  .toFile('public/images/previewAvatars/preview' + newName)
+  try {
+    sharp(myFile.data)
+      .resize(100)
+      .toFile('public/images/previewAvatars/preview' + newName);
+    let updateData = await UserModel.updateOne({ _id: req.tokenData._id }, { img_url_preview: "preview" + newName })
+    res.json({ msg: "File uploaded", status: 200 })
   }
   catch (err) {
-    console.log("resize"+err);
+    console.log("resize" + err);
   }
 
 })
@@ -95,23 +97,28 @@ router.post("/plant", auth, async (req, res) => {
 
 router.delete("/avatar", auth, async (req, res) => {
 
+  let user = await UserModel.findOne({ _id: req.tokenData._id });
+
+  if (user.img_url == "defaultAvatar.png") {
+    return res.status(400).json({ msg: "you don't have a profile image" });
+  }
 
   fs.unlink("public/images/avatars/" + req.tokenData._id + ".png", async (err) => {
     if (err) {
       console.log(err);
-      return res.status(400).json({ msg: "cannot delete profile image" });
+      return res.status(400).json({ msg: "cannot delete original image" });
     }
-    let updateData = await UserModel.updateOne({ _id: req.tokenData._id }, { img_url: config.serverAddress + "/images/avatars/defaultAvatar.png" })
-    res.json({ msg: "File deleted", status: 200 })
 
   })
-  fs.unlink("public/images/previewAvatars/" +"preview"+ req.tokenData._id + ".png", async (err) => {
+  fs.unlink("public/images/previewAvatars/" + "preview" + req.tokenData._id + ".png", async (err) => {
     if (err) {
       console.log(err);
-      return res.status(400).json({ msg: "There problem" });
+      return res.status(400).json({ msg: "cannot delete preview image" });
     }
+    let updateData = await UserModel.updateOne({ _id: req.tokenData._id }, { img_url: "defaultAvatar.png", img_url_preview: "defaultAvatar.png" })
+    res.json({ msg: "File deleted", status: 200 })
   })
-  ;
+    ;
 })
 
 module.exports = router;

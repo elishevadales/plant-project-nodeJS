@@ -2,13 +2,14 @@ const { UserModel, createToken } = require("../models/userModel");
 const { validUser, validLogin, validInfo, validNewPassword } = require("../validations/userValidation")
 const bcrypt = require("bcrypt");
 const { config } = require("../config/secret");
+const fs = require('fs');
 
 exports.userController = {
   routGet: (req, res) => {
     res.json({ msg: "users work - plants project" })
   },
 
-  checkToken: async(req,res) => {
+  checkToken: async (req, res) => {
     res.json(req.tokenData);
   },
 
@@ -39,6 +40,8 @@ exports.userController = {
   myInfo: async (req, res) => {
     try {
       let userInfo = await UserModel.findOne({ _id: req.tokenData._id }, { password: 0 });
+      userInfo.img_url = config.serverAddress + config.originalAvatar + userInfo.img_url
+      userInfo.img_url_preview = config.serverAddress + config.previewAvatar + userInfo.img_url_preview
       res.json(userInfo);
     }
     catch (err) {
@@ -106,7 +109,7 @@ exports.userController = {
 
       // create token that includes userID
       let token = createToken(user._id, user.role);
-      res.json({ token, role: user.role,active: user.active });
+      res.json({ token, role: user.role, active: user.active });
     }
     catch (err) {
       console.log(err)
@@ -167,7 +170,7 @@ exports.userController = {
       let data = await UserModel.updateOne({ _id: req.tokenData._id },
         //  { $set: { "name": req.body.name, "img_url": req.body.img_url} }
         req.body
-         );
+      );
       res.json(data);
     }
     catch (err) {
@@ -214,7 +217,7 @@ exports.userController = {
   },
 
   deleteUser: async (req, res) => {
-    try{
+    try {
 
       let userId = req.params.userId;
 
@@ -223,12 +226,12 @@ exports.userController = {
 
       }
 
-      let data = await UserModel.deleteOne({_id:userId})
+      let data = await UserModel.deleteOne({ _id: userId })
       res.json(data);
     }
-    catch(err){
+    catch (err) {
       console.log(err);
-      res.status(500).json({msg:"there is an error. try again later",err})
+      res.status(500).json({ msg: "there is an error. try again later", err })
     }
   },
 
