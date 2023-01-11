@@ -65,7 +65,9 @@ exports.userController = {
   usersList: async (req, res) => {
     try {
       let data = await UserModel.find({}, { password: 0 });
-      res.json(data)
+      let originalNavigate = config.serverAddress + config.originalAvatar;
+      let previewNavigate = config.serverAddress + config.previewAvatar;
+      res.json({data,original:originalNavigate,preview:previewNavigate})
     }
     catch (err) {
       console.log(err)
@@ -116,6 +118,8 @@ exports.userController = {
       res.status(500).json({ msg: "err", err })
     }
   },
+
+
   changeRole: async (req, res) => {
     if (!req.body.role) {
       return res.status(400).json({ msg: "Need to send role in body" });

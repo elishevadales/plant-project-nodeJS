@@ -1,6 +1,7 @@
 
 const { plantModel } = require("../models/plantModel");
 const { validatePlant } = require("../validations/plantValidation")
+const { config } = require("../config/secret");
 
 exports.plantController = {
   plantsList: async (req, res) => {
@@ -15,7 +16,9 @@ exports.plantController = {
         .skip((page - 1) * perPage)
         // .sort({_id:-1}) like -> order by _id DESC
         .sort({ [sort]: reverse })
-      res.json(data);
+      let originalNavigate = config.serverAddress + config.originalPlant;
+      let previewNavigate = config.serverAddress + config.previewPlant;
+      res.json({ data, original: originalNavigate, preview: previewNavigate })
     }
     catch (err) {
       console.log(err);
