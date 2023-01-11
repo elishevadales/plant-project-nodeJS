@@ -7,7 +7,8 @@ const { boolean, number } = require("joi");
 let plantSchema = new mongoose.Schema({
     name:String,
     img_url:String,
-    location:String,
+    img_url_preview:String,
+    // location:String,
     likes:{
         type: Number, default: 0
     },

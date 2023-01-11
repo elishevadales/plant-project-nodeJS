@@ -140,6 +140,8 @@ exports.userController = {
       res.status(500).json({ msg: "err", err })
     }
   },
+
+  
   changeActive: async (req, res) => {
     if (!req.body.active && req.body.active != false) {
       return res.status(400).json({ msg: "Need to send active in body" });
@@ -160,6 +162,8 @@ exports.userController = {
       res.status(500).json({ msg: "err", err })
     }
   },
+
+
   changeMyInfo: async (req, res) => {
     let validBody = validInfo(req.body);
     if (validBody.error) {

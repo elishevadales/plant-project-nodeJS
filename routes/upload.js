@@ -5,7 +5,7 @@ const {uploadController} = require('../controllers/uploadController');
 
 router.get("/", uploadController.getUpload)
 router.post("/avatar", auth, uploadController.addAvatar )
-router.post("/plant", auth, uploadController.addPlantImage)
+router.post("/plant/:plantId", auth, uploadController.addPlantImage)
 router.delete("/avatar", auth, uploadController.deleteAvatar)
 
 module.exports = router;

@@ -2,6 +2,7 @@ const fs = require('fs');
 const sharp = require('sharp');
 const path = require("path");
 const { UserModel } = require("../models/userModel");
+const {plantModel} = require("../models/plantModel");
 const { config } = require("../config/secret")
 
 exports.uploadController = {
@@ -39,16 +40,15 @@ exports.uploadController = {
 
             // update user's img_url in DB
             let updateData = await UserModel.updateOne({ _id: req.tokenData._id }, { img_url: newName })
-            // res.json({ msg: "File uploaded", status: 200 })
         })
-        
+
         //save preview image
         try {
             sharp(myFile.data)
                 .resize(100)
                 .toFile('public/images/previewAvatars/preview' + newName);
             let updateData = await UserModel.updateOne({ _id: req.tokenData._id }, { img_url_preview: "preview" + newName })
-            res.json({ msg: "File uploaded", status: 200 })
+            res.json({ msg: "original and preview files uploaded", status: 200 })
         }
         catch (err) {
             console.log("resize" + err);
@@ -58,10 +58,17 @@ exports.uploadController = {
 
 
     addPlantImage: async (req, res) => {
+
+        let plantId = req.params.plantId
+
+        if(!req.files){
+            return res.status(400).json({ msg: "You need to send file" });
+
+        }
         let myFile = req.files["plant"];
 
         if (!myFile) {
-            return res.status(400).json({ msg: "You need to send file" });
+            return res.status(400).json({ msg: "You need to send file named 'plant'" });
         }
         if (myFile.size > 1024 * 1024 * 2) {
             return res.status(400).json({ msg: "File too big (max 2mb)" });
@@ -73,14 +80,29 @@ exports.uploadController = {
         if (!exts_ar.includes(extFileName)) {
             return res.json({ msg: "File ext not allowed , just img file for web : png,jpeg,gif" })
         }
+        
+        let newName = req.tokenData._id +"plantId_"+ plantId + ".png";
         //where to save the image, which name
-        myFile.mv("public/images/plants/" + req.tokenData._id + Date.now() + ".png", (err) => {
+        myFile.mv("public/images/plants/" + newName, async (err) => {
             if (err) {
                 console.log(err)
                 return res.status(400).json({ msg: "There problem" });
             }
-            res.json({ msg: "File uploaded", status: 200 })
+            // update plant's img_url in DB
+            let updateData = await plantModel.updateOne({ user_id: req.tokenData._id, _id:plantId}, { img_url: newName })
+ 
         })
+
+        try {
+            sharp(myFile.data)
+                .resize(100)
+                .toFile('public/images/previewPlants/preview' + newName);
+            let updateData = await plantModel.updateOne({ _id: req.tokenData._id , _id:plantId}, { img_url_preview: "preview" + newName })
+            res.json({ msg: "original and preview files uploaded", status: 200 })
+        }
+        catch (err) {
+            console.log("resize" + err);
+        }
     },
 
 
