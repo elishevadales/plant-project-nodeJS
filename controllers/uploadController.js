@@ -22,11 +22,11 @@ exports.uploadController = {
             return res.status(400).json({ msg: "File too big (max 2mb)" });
         }
         // סיומות שמותר למשתמש לעלות
-        let exts_ar = [".png", ".jpeg", ".gif"];
+        let exts_ar = [".png", ".jpeg", ".gif", ".jpg"];
         // יכיל את הסיומת של הקובץ ששלחתי לשרת
         let extFileName = path.extname(myFile.name);
         if (!exts_ar.includes(extFileName)) {
-            return res.json({ msg: "File ext not allowed ,  just img file for web : png,jpeg,gif" })
+            return res.json({ msg: "File ext not allowed ,  just img file for web : png,jpeg,gif,jpg" })
         }
         //no need a date for avatar
         let newName = req.tokenData._id + ".png";
@@ -45,7 +45,7 @@ exports.uploadController = {
         //save preview image
         try {
             sharp(myFile.data)
-                .resize(100)
+                .resize(200)
                 .toFile('public/images/previewAvatars/preview' + newName);
             let updateData = await UserModel.updateOne({ _id: req.tokenData._id }, { img_url_preview: "preview" + newName })
             res.json({ msg: "original and preview files uploaded", status: 200 })
@@ -74,11 +74,11 @@ exports.uploadController = {
             return res.status(400).json({ msg: "File too big (max 2mb)" });
         }
         // סיומות שמותר למשתמש לעלות
-        let exts_ar = [".png", ".jpeg", ".gif"];
+        let exts_ar = [".png", ".jpeg", ".gif",".jpg"];
         // יכיל את הסיומת של הקובץ ששלחתי לשרת
         let extFileName = path.extname(myFile.name);
         if (!exts_ar.includes(extFileName)) {
-            return res.json({ msg: "File ext not allowed , just img file for web : png,jpeg,gif" })
+            return res.json({ msg: "File ext not allowed , just img file for web : png,jpeg,gif,jpg" })
         }
         
         let newName = req.tokenData._id +"plantId_"+ plantId + ".png";
@@ -95,7 +95,7 @@ exports.uploadController = {
 
         try {
             sharp(myFile.data)
-                .resize(100)
+                .resize(200)
                 .toFile('public/images/previewPlants/preview' + newName);
             let updateData = await plantModel.updateOne({ _id: req.tokenData._id , _id:plantId}, { img_url_preview: "preview" + newName })
             res.json({ msg: "original and preview files uploaded", status: 200 })
