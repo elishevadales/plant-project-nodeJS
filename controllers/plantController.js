@@ -11,7 +11,7 @@ exports.plantController = {
     let reverse = req.query.reverse == "yes" ? 1 : -1;
 
     try {
-      let data = await plantModel.find({})
+      let data = await plantModel.find({}).populate({path:"user_id", model:"users"})
         .limit(perPage)
         .skip((page - 1) * perPage)
         // .sort({_id:-1}) like -> order by _id DESC
@@ -50,7 +50,9 @@ exports.plantController = {
   plantDetails: async (req, res) => {
     try {
       let plantId = req.params.plantId;
-      let plantInfo = await plantModel.findOne({ _id: plantId });
+      let plantInfo = await plantModel.findOne({ _id: plantId }).populate({path:"user_id", model:"users"});
+      // let userInfo = plantModel.find({});
+      // plantInfo. = userInfo;
       res.json(plantInfo);
     }
     catch (err) {

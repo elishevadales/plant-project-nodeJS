@@ -8,7 +8,6 @@ let plantSchema = new mongoose.Schema({
     name:String,
     img_url:String,
     img_url_preview:String,
-    // location:String,
     likes:{
         type: Number, default: 0
     },
@@ -18,8 +17,12 @@ let plantSchema = new mongoose.Schema({
         long: mongoose.Types.Decimal128
     },
 
-    //ObjectId
-    user_id: String,
+    
+    // user_id: String,
+    user_id: {
+      type:mongoose.Schema.Types.ObjectId,
+      ref:"users"
+    },
   
     date_created:{
       type:Date , default:Date.now()
