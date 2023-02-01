@@ -18,6 +18,10 @@ router.get("/myPlants" , auth, plantController.myPlants)
 //add plant
 router.post("/", auth, plantController.addPlant)
 router.patch("/changeActive/:plantId", authAdmin, plantController.changeActive)
+//likes
+router.patch("/addLike/:plantId", auth, plantController.addLike)
+router.patch("/deleteLike/:plantId", auth, plantController.deleteLike)
+
 //edit plant
 router.put("/:plantId",auth, plantController.editPlant)
 router.delete("/:plantId",auth, plantController.deletePlant)

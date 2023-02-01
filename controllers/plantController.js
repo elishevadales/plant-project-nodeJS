@@ -11,14 +11,16 @@ exports.plantController = {
     let reverse = req.query.reverse == "yes" ? 1 : -1;
 
     try {
-      let data = await plantModel.find({}).populate({path:"user_id", model:"users"})
+      let data = await plantModel.find({}).populate({ path: "user_id", model: "users" })
         .limit(perPage)
         .skip((page - 1) * perPage)
         // .sort({_id:-1}) like -> order by _id DESC
         .sort({ [sort]: reverse })
       let originalNavigate = config.serverAddress + config.originalPlant;
       let previewNavigate = config.serverAddress + config.previewPlant;
-      res.json({ data, original: originalNavigate, preview: previewNavigate })
+      let originalNavigateAvatar = config.serverAddress + config.originalAvatar;
+      let previewNavigateAvatar = config.serverAddress + config.previewAvatar;
+      res.json({ data, original: originalNavigate, preview: previewNavigate, originalAvatar: originalNavigateAvatar, previewAvatar: previewNavigateAvatar })
     }
     catch (err) {
       console.log(err);
@@ -50,7 +52,7 @@ exports.plantController = {
   plantDetails: async (req, res) => {
     try {
       let plantId = req.params.plantId;
-      let plantInfo = await plantModel.findOne({ _id: plantId }).populate({path:"user_id", model:"users"});
+      let plantInfo = await plantModel.findOne({ _id: plantId }).populate({ path: "user_id", model: "users" });
       // let userInfo = plantModel.find({});
       // plantInfo. = userInfo;
       res.json(plantInfo);
@@ -170,6 +172,39 @@ exports.plantController = {
       res.status(500).json({ msg: "err", err })
     }
   },
+
+
+  addLike: async (req, res) => {
+
+    try {
+      let plantId = req.params.plantId
+      let userId = req.tokenData._id;
+      let data = await plantModel.updateOne({ _id: plantId }, { $push: { likesList: userId }, $inc: { likes: 1 } });
+      doc = await plantModel.findOne({ _id: plantId });
+
+      res.json(doc);
+    }
+    catch (err) {
+      console.log(err)
+      res.status(500).json({ msg: "err", err })
+    }
+  },
+
+
+  deleteLike: async (req, res) => {
+    try {
+      let plantId = req.params.plantId
+      let userId = req.tokenData._id;
+      let data = await plantModel.updateOne({ _id: plantId }, { $pull: { likesList: userId }, $inc: { likes: -1 } });
+      doc = await plantModel.findOne({ _id: plantId });
+      res.json(doc);
+    }
+    catch (err) {
+      console.log(err)
+      res.status(500).json({ msg: "err", err })
+    }
+  },
+
 
   editPlant: async (req, res) => {
     let validBody = validatePlant(req.body);
