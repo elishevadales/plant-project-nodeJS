@@ -41,7 +41,12 @@ exports.plantController = {
         .skip((page - 1) * perPage)
         // .sort({_id:-1}) like -> order by _id DESC
         .sort({ [sort]: reverse })
-      res.json(userPlants);
+
+        let originalNavigate = config.serverAddress + config.originalPlant;
+        let previewNavigate = config.serverAddress + config.previewPlant;
+        let originalNavigateAvatar = config.serverAddress + config.originalAvatar;
+        let previewNavigateAvatar = config.serverAddress + config.previewAvatar;
+      res.json({userPlants, original: originalNavigate, preview: previewNavigate, originalAvatar: originalNavigateAvatar, previewAvatar: previewNavigateAvatar});
     }
     catch (err) {
       console.log(err)
@@ -132,7 +137,12 @@ exports.plantController = {
         .skip((page - 1) * perPage)
         // .sort({_id:-1}) like -> order by _id DESC
         .sort({ [sort]: reverse })
-      res.json(myPlants);
+
+        let originalNavigate = config.serverAddress + config.originalPlant;
+        let previewNavigate = config.serverAddress + config.previewPlant;
+        let originalNavigateAvatar = config.serverAddress + config.originalAvatar;
+        let previewNavigateAvatar = config.serverAddress + config.previewAvatar;
+      res.json({myPlants, original: originalNavigate, preview: previewNavigate, originalAvatar: originalNavigateAvatar, previewAvatar: previewNavigateAvatar});
     }
     catch (err) {
       console.log(err)
@@ -174,15 +184,24 @@ exports.plantController = {
   },
 
 
-  addLike: async (req, res) => {
+  editLike: async (req, res) => {
 
     try {
       let plantId = req.params.plantId
       let userId = req.tokenData._id;
-      let data = await plantModel.updateOne({ _id: plantId }, { $push: { likesList: userId }, $inc: { likes: 1 } });
-      doc = await plantModel.findOne({ _id: plantId });
+let doc2 = await plantModel.findOne({ _id: plantId });
+if(!doc2.likesList.includes(userId)){
+  let data = await plantModel.updateOne({ _id: plantId }, { $push: { likesList: userId }, $inc: { likes: 1 } });
+  let doc = await plantModel.findOne({ _id: plantId });
 
-      res.json(doc);
+  await res.json(doc);
+}
+else{
+  let data = await plantModel.updateOne({ _id: plantId }, { $pull: { likesList: userId }, $inc: { likes: -1 } });
+  let doc = await plantModel.findOne({ _id: plantId });
+  await res.json(doc);
+}
+
     }
     catch (err) {
       console.log(err)
@@ -195,9 +214,13 @@ exports.plantController = {
     try {
       let plantId = req.params.plantId
       let userId = req.tokenData._id;
+      let doc2 = await plantModel.findOne({ _id: plantId });
+      if(doc2.likesList.includes(userId)){
       let data = await plantModel.updateOne({ _id: plantId }, { $pull: { likesList: userId }, $inc: { likes: -1 } });
-      doc = await plantModel.findOne({ _id: plantId });
+      let doc = await plantModel.findOne({ _id: plantId });
       res.json(doc);
+      }
+
     }
     catch (err) {
       console.log(err)

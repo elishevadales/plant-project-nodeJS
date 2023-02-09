@@ -10,6 +10,13 @@ exports.uploadController = {
     getUpload: (req, res) => {
         res.json({ msg: "Upload work!" })
     },
+    getNavigate:(req, res) => {
+        let originalPlant = config.serverAddress + config.originalPlant;
+        let previewPlant = config.serverAddress + config.previewPlant;
+        let originalAvatar = config.serverAddress + config.originalAvatar;
+        let previewAvatar = config.serverAddress + config.previewAvatar;
+        res.json({originalPlant:originalPlant, previewPlant:previewPlant,originalAvatar:originalAvatar,previewAvatar:previewAvatar})
+    },
 
 
     addAvatar: async (req, res) => {
@@ -95,7 +102,7 @@ exports.uploadController = {
 
         try {
             sharp(myFile.data)
-                .resize(200)
+                .resize(300)
                 .toFile('public/images/previewPlants/preview' + newName);
             let updateData = await plantModel.updateOne({ _id: req.tokenData._id , _id:plantId}, { img_url_preview: "preview" + newName })
             res.json({ msg: "original and preview files uploaded", status: 200 })

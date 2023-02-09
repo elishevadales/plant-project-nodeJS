@@ -8,6 +8,7 @@ let plantSchema = new mongoose.Schema({
   name: String,
   img_url: String,
   img_url_preview: String,
+  description: String,
   likesList: [
     {
       type: mongoose.Schema.Types.ObjectId,
