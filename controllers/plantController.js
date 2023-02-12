@@ -42,11 +42,11 @@ exports.plantController = {
         // .sort({_id:-1}) like -> order by _id DESC
         .sort({ [sort]: reverse })
 
-        let originalNavigate = config.serverAddress + config.originalPlant;
-        let previewNavigate = config.serverAddress + config.previewPlant;
-        let originalNavigateAvatar = config.serverAddress + config.originalAvatar;
-        let previewNavigateAvatar = config.serverAddress + config.previewAvatar;
-      res.json({userPlants, original: originalNavigate, preview: previewNavigate, originalAvatar: originalNavigateAvatar, previewAvatar: previewNavigateAvatar});
+      let originalNavigate = config.serverAddress + config.originalPlant;
+      let previewNavigate = config.serverAddress + config.previewPlant;
+      let originalNavigateAvatar = config.serverAddress + config.originalAvatar;
+      let previewNavigateAvatar = config.serverAddress + config.previewAvatar;
+      res.json({ userPlants, original: originalNavigate, preview: previewNavigate, originalAvatar: originalNavigateAvatar, previewAvatar: previewNavigateAvatar });
     }
     catch (err) {
       console.log(err)
@@ -57,10 +57,14 @@ exports.plantController = {
   plantDetails: async (req, res) => {
     try {
       let plantId = req.params.plantId;
+      let originalPlant = config.serverAddress + config.originalPlant;
+      let previewPlant = config.serverAddress + config.previewPlant;
+      let originalAvatar = config.serverAddress + config.originalAvatar;
+      let previewAvatar = config.serverAddress + config.previewAvatar;
       let plantInfo = await plantModel.findOne({ _id: plantId }).populate({ path: "user_id", model: "users" });
       // let userInfo = plantModel.find({});
       // plantInfo. = userInfo;
-      res.json(plantInfo);
+      res.json({plantInfo, navigation:{originalPlant:originalPlant,previewPlant:previewPlant,originalAvatar:originalAvatar,previewAvatar:previewAvatar}});
     }
     catch (err) {
       console.log(err)
@@ -138,11 +142,11 @@ exports.plantController = {
         // .sort({_id:-1}) like -> order by _id DESC
         .sort({ [sort]: reverse })
 
-        let originalNavigate = config.serverAddress + config.originalPlant;
-        let previewNavigate = config.serverAddress + config.previewPlant;
-        let originalNavigateAvatar = config.serverAddress + config.originalAvatar;
-        let previewNavigateAvatar = config.serverAddress + config.previewAvatar;
-      res.json({myPlants, original: originalNavigate, preview: previewNavigate, originalAvatar: originalNavigateAvatar, previewAvatar: previewNavigateAvatar});
+      let originalNavigate = config.serverAddress + config.originalPlant;
+      let previewNavigate = config.serverAddress + config.previewPlant;
+      let originalNavigateAvatar = config.serverAddress + config.originalAvatar;
+      let previewNavigateAvatar = config.serverAddress + config.previewAvatar;
+      res.json({ myPlants, original: originalNavigate, preview: previewNavigate, originalAvatar: originalNavigateAvatar, previewAvatar: previewNavigateAvatar });
     }
     catch (err) {
       console.log(err)
@@ -189,18 +193,18 @@ exports.plantController = {
     try {
       let plantId = req.params.plantId
       let userId = req.tokenData._id;
-let doc2 = await plantModel.findOne({ _id: plantId });
-if(!doc2.likesList.includes(userId)){
-  let data = await plantModel.updateOne({ _id: plantId }, { $push: { likesList: userId }, $inc: { likes: 1 } });
-  let doc = await plantModel.findOne({ _id: plantId });
+      let doc2 = await plantModel.findOne({ _id: plantId });
+      if (!doc2.likesList.includes(userId)) {
+        let data = await plantModel.updateOne({ _id: plantId }, { $push: { likesList: userId }, $inc: { likes: 1 } });
+        let doc = await plantModel.findOne({ _id: plantId });
 
-  await res.json(doc);
-}
-else{
-  let data = await plantModel.updateOne({ _id: plantId }, { $pull: { likesList: userId }, $inc: { likes: -1 } });
-  let doc = await plantModel.findOne({ _id: plantId });
-  await res.json(doc);
-}
+        await res.json(doc);
+      }
+      else {
+        let data = await plantModel.updateOne({ _id: plantId }, { $pull: { likesList: userId }, $inc: { likes: -1 } });
+        let doc = await plantModel.findOne({ _id: plantId });
+        await res.json(doc);
+      }
 
     }
     catch (err) {
@@ -215,10 +219,10 @@ else{
       let plantId = req.params.plantId
       let userId = req.tokenData._id;
       let doc2 = await plantModel.findOne({ _id: plantId });
-      if(doc2.likesList.includes(userId)){
-      let data = await plantModel.updateOne({ _id: plantId }, { $pull: { likesList: userId }, $inc: { likes: -1 } });
-      let doc = await plantModel.findOne({ _id: plantId });
-      res.json(doc);
+      if (doc2.likesList.includes(userId)) {
+        let data = await plantModel.updateOne({ _id: plantId }, { $pull: { likesList: userId }, $inc: { likes: -1 } });
+        let doc = await plantModel.findOne({ _id: plantId });
+        res.json(doc);
       }
 
     }
