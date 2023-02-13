@@ -54,6 +54,8 @@ exports.userController = {
     try {
       let userId = req.params.userId;
       let userInfo = await UserModel.findOne({ _id: userId }, { password: 0 });
+      userInfo.img_url = config.serverAddress + config.originalAvatar + userInfo.img_url
+      userInfo.img_url_preview = config.serverAddress + config.previewAvatar + userInfo.img_url_preview
       res.json(userInfo);
     }
     catch (err) {
@@ -65,9 +67,11 @@ exports.userController = {
   usersList: async (req, res) => {
     try {
       let data = await UserModel.find({}, { password: 0 });
-      let originalNavigate = config.serverAddress + config.originalAvatar;
-      let previewNavigate = config.serverAddress + config.previewAvatar;
-      res.json({data,original:originalNavigate,preview:previewNavigate})
+      data.map((item,i) => {
+        item.img_url = config.serverAddress + config.originalAvatar + item.img_url;
+        item.img_url_preview = config.serverAddress + config.previewAvatar +item.img_url_preview;
+      })
+      res.json({data})
     }
     catch (err) {
       console.log(err)

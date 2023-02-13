@@ -2,6 +2,7 @@
 const { plantModel } = require("../models/plantModel");
 const { validatePlant } = require("../validations/plantValidation")
 const { config } = require("../config/secret");
+const $ = require( "jquery" );
 
 exports.plantController = {
   plantsList: async (req, res) => {
@@ -16,11 +17,23 @@ exports.plantController = {
         .skip((page - 1) * perPage)
         // .sort({_id:-1}) like -> order by _id DESC
         .sort({ [sort]: reverse })
-      let originalNavigate = config.serverAddress + config.originalPlant;
-      let previewNavigate = config.serverAddress + config.previewPlant;
-      let originalNavigateAvatar = config.serverAddress + config.originalAvatar;
-      let previewNavigateAvatar = config.serverAddress + config.previewAvatar;
-      res.json({ data, original: originalNavigate, preview: previewNavigate, originalAvatar: originalNavigateAvatar, previewAvatar: previewNavigateAvatar })
+let a;
+let b;
+
+      data.map((item, i) => {
+        a = {...item.user_id.img_url};
+        b ={...item.user_id.img_url_preview};
+        item.img_url = config.serverAddress + config.originalPlant + item.img_url;
+        item.img_url_preview = config.serverAddress + config.previewPlant + item.img_url_preview;
+        // item.user_id.img_url = "lol"+"pop";
+        // item.user_id.img_url = config.serverAddress + config.originalAvatar +a;
+        // item.user_id.img_url += "lol" ;
+        // item.user_id.img_url_preview = "lol"+"pop";
+        // item.user_id.img_url_preview = config.serverAddress + config.originalAvatar +b;
+        // item.user_id.img_url_preview += "lol";
+
+      })
+      res.json({ data})
     }
     catch (err) {
       console.log(err);
@@ -42,11 +55,7 @@ exports.plantController = {
         // .sort({_id:-1}) like -> order by _id DESC
         .sort({ [sort]: reverse })
 
-      let originalNavigate = config.serverAddress + config.originalPlant;
-      let previewNavigate = config.serverAddress + config.previewPlant;
-      let originalNavigateAvatar = config.serverAddress + config.originalAvatar;
-      let previewNavigateAvatar = config.serverAddress + config.previewAvatar;
-      res.json({ userPlants, original: originalNavigate, preview: previewNavigate, originalAvatar: originalNavigateAvatar, previewAvatar: previewNavigateAvatar });
+      res.json({ userPlants });
     }
     catch (err) {
       console.log(err)
@@ -57,14 +66,14 @@ exports.plantController = {
   plantDetails: async (req, res) => {
     try {
       let plantId = req.params.plantId;
-      let originalPlant = config.serverAddress + config.originalPlant;
-      let previewPlant = config.serverAddress + config.previewPlant;
-      let originalAvatar = config.serverAddress + config.originalAvatar;
-      let previewAvatar = config.serverAddress + config.previewAvatar;
       let plantInfo = await plantModel.findOne({ _id: plantId }).populate({ path: "user_id", model: "users" });
-      // let userInfo = plantModel.find({});
-      // plantInfo. = userInfo;
-      res.json({plantInfo, navigation:{originalPlant:originalPlant,previewPlant:previewPlant,originalAvatar:originalAvatar,previewAvatar:previewAvatar}});
+
+      plantInfo.img_url = config.serverAddress + config.originalPlant + plantInfo.img_url;
+      plantInfo.img_url_preview = config.serverAddress + config.previewPlant + plantInfo.img_url_preview;
+      plantInfo.user_id.img_url = config.serverAddress + config.originalAvatar + plantInfo.user_id.img_url;
+      plantInfo.user_id.img_url_preview = config.serverAddress + config.previewAvatar + plantInfo.user_id.img_url_preview;
+
+      res.json(plantInfo);
     }
     catch (err) {
       console.log(err)
@@ -142,11 +151,7 @@ exports.plantController = {
         // .sort({_id:-1}) like -> order by _id DESC
         .sort({ [sort]: reverse })
 
-      let originalNavigate = config.serverAddress + config.originalPlant;
-      let previewNavigate = config.serverAddress + config.previewPlant;
-      let originalNavigateAvatar = config.serverAddress + config.originalAvatar;
-      let previewNavigateAvatar = config.serverAddress + config.previewAvatar;
-      res.json({ myPlants, original: originalNavigate, preview: previewNavigate, originalAvatar: originalNavigateAvatar, previewAvatar: previewNavigateAvatar });
+      res.json(myPlants);
     }
     catch (err) {
       console.log(err)
