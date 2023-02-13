@@ -49,13 +49,13 @@ let b;
 
     try {
       let userId = req.params.userId;
-      let userPlants = await plantModel.find({ user_id: userId })
+      let userPlants = await plantModel.find({ user_id: userId }).populate({ path: "user_id", model: "users" })
         .limit(perPage)
         .skip((page - 1) * perPage)
         // .sort({_id:-1}) like -> order by _id DESC
         .sort({ [sort]: reverse })
 
-      res.json({ userPlants });
+      res.json( userPlants );
     }
     catch (err) {
       console.log(err)
