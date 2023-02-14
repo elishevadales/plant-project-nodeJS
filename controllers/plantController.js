@@ -2,7 +2,8 @@
 const { plantModel } = require("../models/plantModel");
 const { validatePlant } = require("../validations/plantValidation")
 const { config } = require("../config/secret");
-const $ = require( "jquery" );
+const $ = require("jquery");
+const geocoder = require('geocoder');
 
 exports.plantController = {
   plantsList: async (req, res) => {
@@ -17,22 +18,25 @@ exports.plantController = {
         .skip((page - 1) * perPage)
         // .sort({_id:-1}) like -> order by _id DESC
         .sort({ [sort]: reverse })
-let a;
-let b;
+      let a;
+      let b;
 
       data.map((item, i) => {
-        a = {...item.user_id.img_url};
-        b ={...item.user_id.img_url_preview};
+        a = { ...item.user_id.img_url };
+        b = { ...item.user_id.img_url_preview };
         item.img_url = config.serverAddress + config.originalPlant + item.img_url;
         item.img_url_preview = config.serverAddress + config.previewPlant + item.img_url_preview;
-        // item.user_id.img_url = "lol"+"pop";
         // item.user_id.img_url = config.serverAddress + config.originalAvatar +a;
-        // item.user_id.img_url += "lol" ;
-        // item.user_id.img_url_preview = "lol"+"pop";
         // item.user_id.img_url_preview = config.serverAddress + config.originalAvatar +b;
-        // item.user_id.img_url_preview += "lol";
-
       })
+
+      // let lat = 37.7749;
+      // let lng = -122.4194;
+      // let endpoint = `https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lng}&format=json`;
+
+      // geocoder.reverseGeocode(33.7489, -84.3789, function (err, data) {
+      //   res.json(data);
+      // });
       res.json({ data})
     }
     catch (err) {
@@ -55,7 +59,7 @@ let b;
         // .sort({_id:-1}) like -> order by _id DESC
         .sort({ [sort]: reverse })
 
-      res.json( userPlants );
+      res.json(userPlants);
     }
     catch (err) {
       console.log(err)
@@ -168,6 +172,7 @@ let b;
       let plant = new plantModel(req.body);
       plant.user_id = req.tokenData._id;
       await plant.save();
+
       res.json(plant);
     }
     catch (err) {

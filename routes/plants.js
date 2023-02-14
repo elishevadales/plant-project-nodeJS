@@ -4,6 +4,7 @@ const {auth,authAdmin} = require("../middlewares/auth");
 const {plantController} = require("../controllers/plantController")
 
 
+
 // get all plants - with user token
 router.get("/" ,auth, plantController.plantsList)
 // return all user's plants

@@ -23,6 +23,7 @@ let plantSchema = new mongoose.Schema({
     lat: mongoose.Types.Decimal128,
     long: mongoose.Types.Decimal128
   },
+  location:String,
 
 
   // user_id: String,
