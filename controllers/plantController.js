@@ -18,25 +18,14 @@ exports.plantController = {
         .skip((page - 1) * perPage)
         // .sort({_id:-1}) like -> order by _id DESC
         .sort({ [sort]: reverse })
-      let a;
-      let b;
 
       data.map((item, i) => {
-        a = { ...item.user_id.img_url };
-        b = { ...item.user_id.img_url_preview };
         item.img_url = config.serverAddress + config.originalPlant + item.img_url;
         item.img_url_preview = config.serverAddress + config.previewPlant + item.img_url_preview;
         // item.user_id.img_url = config.serverAddress + config.originalAvatar +a;
         // item.user_id.img_url_preview = config.serverAddress + config.originalAvatar +b;
       })
 
-      // let lat = 37.7749;
-      // let lng = -122.4194;
-      // let endpoint = `https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lng}&format=json`;
-
-      // geocoder.reverseGeocode(33.7489, -84.3789, function (err, data) {
-      //   res.json(data);
-      // });
       res.json({ data})
     }
     catch (err) {
@@ -94,12 +83,17 @@ exports.plantController = {
       let queryS = req.query.search;
       let searchReg = new RegExp(queryS, "i")
 
-      let plantSearch = await plantModel.find({ name: searchReg })
+      let plantSearch = await plantModel.find({ name: searchReg }).populate({ path: "user_id", model: "users" })
         .limit(perPage)
         .skip((page - 1) * perPage)
         // .sort({_id:-1}) like -> order by _id DESC
         .sort({ [sort]: reverse })
-
+        plantSearch.map((item, i) => {
+          item.img_url = config.serverAddress + config.originalPlant + item.img_url;
+          item.img_url_preview = config.serverAddress + config.previewPlant + item.img_url_preview;
+          // item.user_id.img_url = config.serverAddress + config.originalAvatar +a;
+          // item.user_id.img_url_preview = config.serverAddress + config.originalAvatar +b;
+        })
       res.json(plantSearch);
     }
     catch (err) {
@@ -117,7 +111,7 @@ exports.plantController = {
       let queryS = req.query.search;
       let searchReg = new RegExp(queryS, "i")
 
-      let plantSearch = await plantModel.find({ location: searchReg })
+      let plantSearch = await plantModel.find({ location: searchReg }).populate({ path: "user_id", model: "users" })
         .limit(perPage)
         .skip((page - 1) * perPage)
         // .sort({_id:-1}) like -> order by _id DESC
