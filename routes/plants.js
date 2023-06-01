@@ -7,6 +7,7 @@ const {plantController} = require("../controllers/plantController")
 
 // get all plants - with user token
 router.get("/" ,auth, plantController.plantsList)
+router.get("/plantsListMap" ,auth, plantController.plantsListMap)
 // return all user's plants
 router.get("/userplants/:userId" ,auth, plantController.userPlants)
 //return specific plant details

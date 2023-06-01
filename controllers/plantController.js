@@ -7,7 +7,7 @@ const geocoder = require('geocoder');
 
 exports.plantController = {
   plantsList: async (req, res) => {
-    let perPage = req.query.perPage || 10;
+    let perPage = req.query.perPage || 3;
     let page = req.query.page || 1;
     let sort = req.query.sort || "date_created";
     let reverse = req.query.reverse == "yes" ? 1 : -1;
@@ -34,8 +34,29 @@ exports.plantController = {
     }
   },
 
+  plantsListMap: async (req, res) => {
+
+
+    try {
+      let data = await plantModel.find({}).populate({ path: "user_id", model: "users" })
+
+
+      data.map((item, i) => {
+        item.img_url = config.serverAddress + config.originalPlant + item.img_url;
+        item.img_url_preview = config.serverAddress + config.previewPlant + item.img_url_preview;
+
+      })
+
+      res.json({ data})
+    }
+    catch (err) {
+      console.log(err);
+      res.status(500).json({ msg: "there error try again later", err })
+    }
+  },
+
   userPlants: async (req, res) => {
-    let perPage = req.query.perPage || 4;
+    let perPage = req.query.perPage || 3;
     let page = req.query.page || 1;
     let sort = req.query.sort || "date_created";
     let reverse = req.query.reverse == "yes" ? 1 : -1;
@@ -48,6 +69,11 @@ exports.plantController = {
         // .sort({_id:-1}) like -> order by _id DESC
         .sort({ [sort]: reverse })
 
+        userPlants.map((item, i) => {
+          item.img_url = config.serverAddress + config.originalPlant + item.img_url;
+          item.img_url_preview = config.serverAddress + config.previewPlant + item.img_url_preview;
+        })
+        
       res.json(userPlants);
     }
     catch (err) {
@@ -75,7 +101,7 @@ exports.plantController = {
   },
 
   searchByName: async (req, res) => {
-    let perPage = req.query.perPage || 4;
+    let perPage = req.query.perPage || 3;
     let page = req.query.page || 1;
     let sort = req.query.sort || "date_created";
     let reverse = req.query.reverse == "yes" ? 1 : -1;
@@ -103,7 +129,7 @@ exports.plantController = {
   },
 
   searchByLocation: async (req, res) => {
-    let perPage = req.query.perPage || 4;
+    let perPage = req.query.perPage || 3;
     let page = req.query.page || 1;
     let sort = req.query.sort || "date_created";
     let reverse = req.query.reverse == "yes" ? 1 : -1;
@@ -138,7 +164,7 @@ exports.plantController = {
   },
 
   myPlants: async (req, res) => {
-    let perPage = req.query.perPage || 4;
+    let perPage = req.query.perPage || 3;
     let page = req.query.page || 1;
     let sort = req.query.sort || "date_created";
     let reverse = req.query.reverse == "yes" ? 1 : -1;
