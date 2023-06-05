@@ -307,6 +307,7 @@ exports.plantController = {
         data = await plantModel.deleteOne({ _id: plantId, user_id: req.tokenData._id })
 
       }
+      
       res.json(data);
     }
     catch (err) {

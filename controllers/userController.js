@@ -231,15 +231,36 @@ exports.userController = {
   deleteUser: async (req, res) => {
     try {
 
-      let userId = req.params.userId;
+      const userId = req.params.userId;
 
-      if (userId == config.admin_token) {
+      if (userId === config.admin_token) {
         return res.status(401).json({ msg: "You cant delete superadmin" });
 
       }
+//delete user's avatar from system
+      const user = await UserModel.findOne({ _id: userId });
 
-      let data = await UserModel.deleteOne({ _id: userId })
+      if (user.img_url != "defaultAvatar.png") {
+        fs.unlink("public/images/avatars/" + userId + ".png", async (err) => {
+          if (err) {
+              console.log(err);
+              return res.status(400).json({ msg: "cannot delete original image" });
+          }
+
+      })
+      fs.unlink("public/images/previewAvatars/" + "preview" + userId + ".png", async (err) => {
+          if (err) {
+              console.log(err);
+              return res.status(400).json({ msg: "cannot delete preview image" });
+          }
+      })
+      }
+
+//delete user from system
+      const data = await UserModel.deleteOne({ _id: userId })
       res.json(data);
+  
+      
     }
     catch (err) {
       console.log(err);
