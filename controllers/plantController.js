@@ -13,11 +13,13 @@ exports.plantController = {
     let reverse = req.query.reverse == "yes" ? 1 : -1;
 
     try {
-      let data = await plantModel.find({}).populate({ path: "user_id", model: "users" })
+      let data = await plantModel
+        .find({})
+        .populate({ path: "user_id", model: "users" })
+        .sort({ [sort]: reverse })
         .limit(perPage)
         .skip((page - 1) * perPage)
-        // .sort({_id:-1}) like -> order by _id DESC
-        .sort({ [sort]: reverse })
+
 
       data.map((item, i) => {
         item.img_url = config.serverAddress + config.originalPlant + item.img_url;
@@ -63,11 +65,13 @@ exports.plantController = {
 
     try {
       let userId = req.params.userId;
-      let userPlants = await plantModel.find({ user_id: userId }).populate({ path: "user_id", model: "users" })
+      let userPlants = await plantModel
+        .find({ user_id: userId })
+        .populate({ path: "user_id", model: "users" })
+        .sort({ [sort]: reverse })
         .limit(perPage)
         .skip((page - 1) * perPage)
-        // .sort({_id:-1}) like -> order by _id DESC
-        .sort({ [sort]: reverse })
+
 
         userPlants.map((item, i) => {
           item.img_url = config.serverAddress + config.originalPlant + item.img_url;
@@ -109,11 +113,13 @@ exports.plantController = {
       let queryS = req.query.search;
       let searchReg = new RegExp(queryS, "i")
 
-      let plantSearch = await plantModel.find({ name: searchReg }).populate({ path: "user_id", model: "users" })
+      let plantSearch = await plantModel
+        .find({ name: searchReg })
+        .populate({ path: "user_id", model: "users" })
+        .sort({ [sort]: reverse })
         .limit(perPage)
         .skip((page - 1) * perPage)
-        // .sort({_id:-1}) like -> order by _id DESC
-        .sort({ [sort]: reverse })
+
         plantSearch.map((item, i) => {
           item.img_url = config.serverAddress + config.originalPlant + item.img_url;
           item.img_url_preview = config.serverAddress + config.previewPlant + item.img_url_preview;
@@ -137,11 +143,13 @@ exports.plantController = {
       let queryS = req.query.search;
       let searchReg = new RegExp(queryS, "i")
 
-      let plantSearch = await plantModel.find({ location: searchReg }).populate({ path: "user_id", model: "users" })
+      let plantSearch = await plantModel
+        .find({ location: searchReg })
+        .populate({ path: "user_id", model: "users" })
+        .sort({ [sort]: reverse })
         .limit(perPage)
         .skip((page - 1) * perPage)
-        // .sort({_id:-1}) like -> order by _id DESC
-        .sort({ [sort]: reverse })
+
 
       res.json(plantSearch);
     }
@@ -169,11 +177,12 @@ exports.plantController = {
     let sort = req.query.sort || "date_created";
     let reverse = req.query.reverse == "yes" ? 1 : -1;
     try {
-      let myPlants = await plantModel.find({ user_id: req.tokenData._id })
+      let myPlants = await plantModel
+        .find({ user_id: req.tokenData._id })
+        .sort({ [sort]: reverse })
         .limit(perPage)
         .skip((page - 1) * perPage)
-        // .sort({_id:-1}) like -> order by _id DESC
-        .sort({ [sort]: reverse })
+
 
       res.json(myPlants);
     }

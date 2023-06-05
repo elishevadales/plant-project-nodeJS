@@ -33,7 +33,8 @@ let plantSchema = new mongoose.Schema({
   },
 
   date_created: {
-    type: Date, default: Date.now()
+    // type: Date, default: Date.now
+ type: Date, default: new Date(Date.now() + (3 * 60 * 60 * 1000))
   },
   // role of the user if regular user or admin
   active: {
