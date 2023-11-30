@@ -140,6 +140,10 @@ exports.userController = {
         return res.status(401).json({ msg: "role can be only user/admin" });
 
       }
+      if(userID == req.tokenData._id){
+        return res.status(401).json({ msg: "You cant change your role" });
+      }
+
       let data = await UserModel.updateOne({ _id: userID }, { role: req.body.role })
       res.json(data);
     }
@@ -161,6 +165,9 @@ exports.userController = {
       if (userID == config.admin_token) {
         return res.status(401).json({ msg: "You cant block superadmin" });
 
+      }
+      if(userID == req.tokenData._id){
+        return res.status(401).json({ msg: "You cant change your Active status" });
       }
       let data = await UserModel.updateOne({ _id: userID }, { active: req.body.active })
       res.json(data);
@@ -236,6 +243,9 @@ exports.userController = {
       if (userId === config.admin_token) {
         return res.status(401).json({ msg: "You cant delete superadmin" });
 
+      }
+      if(userId == req.tokenData._id){
+        return res.status(401).json({ msg: "You cant delete your acount" });
       }
 //delete user's avatar from system
       const user = await UserModel.findOne({ _id: userId });
